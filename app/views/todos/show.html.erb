@@ -1,10 +1,45 @@
-<p style="color: green"><%= notice %></p>
+<!-- Display a notice if there is one -->
+<p id="notice"><%= notice %></p>
 
+<!-- Render the @todo object -->
 <%= render @todo %>
 
-<div>
-  <%= link_to "Edit this todo", edit_todo_path(@todo) %> |
-  <%= link_to "Back to todos", todos_path %>
+<!-- Iterate over each task in @tasks -->
+<% @tasks.each do |task| %>
+  <!-- Check if the task is done -->
+  <% if task.done == true %>
+    <!-- If the task is done, strike through the title -->
+    <strike>
+      <p><%= task.title %></p>
+    </strike>
+    <!-- Form to mark the task as not done (Undo) -->
+    <%= form_for task do |f| %>
+      <%= f.check_box :done, :value => task.done %>
+      <%= f.submit "Undo" %>
+    <% end %>
+  <!-- Check if the task is not done -->
+  <% elsif task.done == false %>
+    <!-- If the task is not done, display the title normally -->
+    <p><%= task.title %></p>
+    <!-- Form to mark the task as done -->
+    <%= form_for task do |f| %>
+      <%= f.check_box :done, :value => task.done %>
+      <%= f.submit "Done" %>
+    <% end %>
+  <% end %>
+<% end %>
 
-  <%= button_to "Destroy this todo", @todo, method: :delete %>
-</div>
+<!-- Form to add a new task -->
+<%= form_for @task do |f| %>
+  <p><%= f.text_field :title %></p>
+  <!-- Hidden field to set the task as not done -->
+  <%= f.hidden_field :done, :value => false %>
+  <!-- Hidden field to associate the task with the current todo -->
+  <%= f.hidden_field :todo_id, :value => @todo.id %> 
+  <%= f.submit "Add Task" %>
+<% end %>
+
+<!-- Links for editing the current todo, going back to the todos list, and deleting the current todo -->
+<%= link_to "Edit", edit_todo_path(@todo) %> |
+<%= link_to "Back", todos_path %>
+<%= button_to "Delete", @todo, method: :delete %>
